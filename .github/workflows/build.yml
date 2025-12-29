@@ -6,60 +6,25 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-iso:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      actions: write
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v4
-        with:
-          path: repo
-
+      
       - name: Build ISO
-        run: |
-          # Docker container içinde çalıştır
-          docker run --privileged --rm -v $(pwd):/workspace -w /workspace archlinux:base-devel bash -c '
-            set -ex # Hataları göster ve durdur
-
-            # 1. Paket veritabanını güncelle ve temel araçları kur
-            pacman-key --init
-            pacman-key --populate archlinux
-            pacman -Syu --noconfirm git archiso syslinux grub
-
-            # 2. Chaotic AUR Kurulumu (Gerekli paketler için)
-            pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
-            pacman-key --lsign-key 3056513887B78AEB
-            pacman -U --noconfirm "https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst"
-            pacman -U --noconfirm "https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst"
-            
-            # Repoyu ekle
-            echo "[chaotic-aur]" >> /etc/pacman.conf
-            echo "Include = /etc/pacman.d/chaotic-mirrorlist" >> /etc/pacman.conf
-            pacman -Sy
-
-            # 3. Build Klasörünü Hazırla
-            # Orijinal profili kopyala
-            cp -r /usr/share/archiso/configs/releng /workspace/build
-            
-            # Bizim dosyaları üzerine yaz (Force overwrite)
-            cp -rf /workspace/repo/* /workspace/build/
-            
-            # Dosya izinlerini düzelt
-            cd /workspace/build
-            chmod +x profiledef.sh
-            
-            # Gereksiz dosyaları temizle (.git klasörü vs ISO içine girmesin)
-            rm -rf .git .github
-
-            # 4. ISO İnşa Et
-            mkarchiso -v -w /workspace/work -o /workspace/out ./
-          '
-
-      - name: Upload ISO Artifact
+        uses: 2m/arch-iso-build@v2
+        with:
+          target_path: './'      # build.yml ile aynı dizindeki dosyaları kullan
+          output_path: 'out'     # Çıktıyı out klasörüne at
+          # Ek paket deposu (Chaotic AUR) ekle
+          additional_repositories: |
+            [chaotic-aur]
+            SigLevel = Never
+            Server = https://cdn-mirror.chaotic.cx/chaotic-aur/$arch
+      
+      - name: Upload ISO
         uses: actions/upload-artifact@v4
         with:
           name: StrawLinux-ISO
           path: out/*.iso
-          retention-days: 5
