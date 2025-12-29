@@ -23,6 +23,7 @@ nano
 plymouth
 grub
 efibootmgr
+syslinux
 spectacle
 okular
 ark

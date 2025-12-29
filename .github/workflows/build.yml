@@ -41,8 +41,8 @@ jobs:
             # Update cache with new repo
             pacman -Sy
 
-            # 3. Install archiso tools
-            pacman -S --noconfirm archiso
+            # 3. Install archiso tools and bootloaders
+            pacman -S --noconfirm archiso syslinux grub
 
             # 4. Prepare Build Directory
             # Copy default releng profile as base
