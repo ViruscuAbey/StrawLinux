@@ -1,0 +1,9 @@
+[General]
+immutability=immutable
+
+[Panels][1]
+alignment=center
+location=bottom
+panelCategory=0
+plugin=org.kde.plasma.panel
+thickness=44

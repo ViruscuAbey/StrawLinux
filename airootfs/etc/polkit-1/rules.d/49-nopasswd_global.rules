@@ -1,0 +1,14 @@
+polkit.addRule(function(action, subject) {
+    if ((action.id == "org.freedesktop.packagekit.system-sources-configure" ||
+         action.id == "org.freedesktop.packagekit.system-network-proxy-configure" ||
+         action.id == "org.freedesktop.packagekit.system-install" ||
+         action.id == "org.freedesktop.packagekit.system-update" ||
+         action.id == "org.freedesktop.packagekit.package-install" ||
+         action.id == "org.freedesktop.packagekit.package-reinstall" ||
+         action.id == "org.freedesktop.packagekit.package-remove" ||
+         action.id == "org.freedesktop.packagekit.upgrade-system") &&
+        subject.active == true && subject.local == true &&
+        subject.isInGroup("wheel")) {
+            return polkit.Result.YES;
+    }
+});

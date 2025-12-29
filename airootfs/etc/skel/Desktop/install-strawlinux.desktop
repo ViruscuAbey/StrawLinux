@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Exec=pkexec calamares
+Icon=calamares
+Terminal=false
+Name=Install StrawLinux
+Comment=Install the StrawLinux to your hard drive
+Categories=System;

@@ -1,0 +1,67 @@
+name: Build StrawLinux ISO
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+        contents: write
+        actions: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          path: repo
+
+      - name: Build ISO using Docker (Arch Linux)
+        run: |
+          docker run --privileged --rm -v $(pwd):/workspace -w /workspace archlinux:latest bash -c "
+            # 1. Update and setup Chaotic AUR (needed for packages in packages.x86_64 and pacman.conf)
+            pacman-key --init
+            pacman-key --populate archlinux
+            pacman -Syu --noconfirm --needed git base-devel
+            
+            # Install Chaotic AUR key and mirrorlist
+            pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
+            pacman-key --lsign-key 3056513887B78AEB
+            pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst'
+            pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
+
+            # Append Chaotic AUR to system pacman.conf so generic tools can find it
+            echo '[chaotic-aur]' >> /etc/pacman.conf
+            echo 'Include = /etc/pacman.d/chaotic-mirrorlist' >> /etc/pacman.conf
+            
+            # Update cache with new repo
+            pacman -Sy
+
+            # Install archiso
+            pacman -S --noconfirm archiso mkinitcpio-archiso
+
+            # 2. Prepare Build Directory
+            # Copy default releng profile as base (bootloaders, etc.)
+            cp -r /usr/share/archiso/configs/releng /tmp/strawlinux-build
+            
+            # Overlay our repo files on top of releng
+            # We exclude .git and .github to keep it clean
+            cp -r /workspace/repo/* /tmp/strawlinux-build/
+            
+            # 3. Build the ISO
+            cd /tmp/strawlinux-build
+            
+            # Ensure permissions are correct for scripts
+            chmod +x profiledef.sh
+            
+            # Build
+            mkarchiso -v -w /tmp/archiso-work -o /workspace/out ./
+          "
+
+      - name: Upload ISO Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: StrawLinux-ISO
+          path: out/*.iso
+          retention-days: 5

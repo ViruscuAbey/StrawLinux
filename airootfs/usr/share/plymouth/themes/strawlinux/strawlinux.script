@@ -1,0 +1,19 @@
+logo_image = Image("logo.png");
+
+# Center the logo
+screen_width = Window.GetWidth();
+screen_height = Window.GetHeight();
+logo_width = logo_image.GetWidth();
+logo_height = logo_image.GetHeight();
+
+logo_sprite = Sprite(logo_image);
+logo_sprite.SetX(screen_width / 2 - logo_width / 2);
+logo_sprite.SetY(screen_height / 2 - logo_height / 2);
+logo_sprite.SetOpacity(1);
+
+fun refresh_callback ()
+  {
+    # No animation for now
+  }
+
+Plymouth.SetRefreshFunction (refresh_callback);

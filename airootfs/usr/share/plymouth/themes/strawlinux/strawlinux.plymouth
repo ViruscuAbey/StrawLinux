@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=StrawLinux
+Description=A theme for StrawLinux with a custom logo.
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/strawlinux
+ScriptFile=/usr/share/plymouth/themes/strawlinux/strawlinux.script

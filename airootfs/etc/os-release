@@ -1,0 +1,11 @@
+NAME="StrawLinux"
+PRETTY_NAME="StrawLinux 1.0 (Berry)"
+ID=strawlinux
+ID_LIKE=arch
+BUILD_ID=rolling
+ANSI_COLOR="38;2;255;100;100"
+HOME_URL="https://strawlinux.org/"
+DOCUMENTATION_URL="https://strawlinux.org/docs"
+SUPPORT_URL="https://strawlinux.org/support"
+BUG_REPORT_URL="https://strawlinux.org/issues"
+LOGO=strawlinux-logo

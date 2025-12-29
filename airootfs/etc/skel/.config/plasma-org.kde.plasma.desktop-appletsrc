@@ -1,0 +1,7 @@
+[Containments][1]
+activityId=
+wallpaperplugin=org.kde.image
+
+[Containments][1][Wallpaper][org.kde.image][General]
+Image=file:///usr/share/backgrounds/strawlinux/wallpaper.jpg
+PreviewImage=file:///usr/share/backgrounds/strawlinux/wallpaper.jpg
